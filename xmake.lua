@@ -1,8 +1,22 @@
 add_rules("mode.debug", "mode.release")
+add_rules("plugin.compile_commands.autoupdate",{outputdir ="build"})
 
-target("vulkan-learn")
+set_toolchains("gcc", {tooldir = "D:/MinGW/bin"})
+
+set_languages("c++17")
+
+target("vulkan_learn")
     set_kind("binary")
     add_files("src/*.cpp")
+
+    -- vulkan
+    add_includedirs("$(env VK_SDK_PATH)/Include")
+    add_linkdirs("$(env VK_SDK_PATH)/Lib")
+    add_links("vulkan-1")
+
+    -- sdl2
+    --add_packages("SDL2")
+    --add_packages("sdl2")
 
 --
 -- If you want to known more usage about xmake, please see https://xmake.io
