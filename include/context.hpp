@@ -1,7 +1,12 @@
 #pragma once
 
+#include "SDL2/SDL_stdinc.h"
+#include "vulkan/vulkan.hpp"
+#include "vulkan/vulkan_handles.hpp"
 #include <memory>
-#include <vulkan/vulkan.hpp>
+#include <cassert>
+#include <iostream>
+#include <optional>
 
 namespace vkl {
 
@@ -13,11 +18,28 @@ public:
 
     ~Context();
 
+    struct QueueFamilyIndices final {
+        std::optional<uint32_t> graphicsQueue;
+    };
+
     vk::Instance instance;
+    vk::PhysicalDevice phyDevice;
+    vk::Device device;
+    vk::Queue graphicsQueue;
+    QueueFamilyIndices queueFamilyIndices;
+
 private:
     Context();
 
     static std::unique_ptr<Context> instance_;
+
+    void createInstance();
+    void pickUpPhysicalDevice();
+    void createDevice();
+    void getQueues();
+
+    void queryQueueFamilyIndices();
+
 };
 
 }
