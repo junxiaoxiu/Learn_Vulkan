@@ -1,12 +1,8 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_vulkan.h"
 
-#include <iostream>
-#include <vector>
-
 #include "vkl.hpp"
 
-#undef main
 int main(int argc, char** argv) {
     SDL_Init(SDL_INIT_EVERYTHING);
 
