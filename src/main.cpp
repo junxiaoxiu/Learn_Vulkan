@@ -1,10 +1,14 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_vulkan.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <iostream>
+#include <stdexcept>
 #include <vector>
 
 #include "vkl.hpp"
+#include "vulkan/vulkan_handles.hpp"
 
 #undef main
 int main(int argc, char** argv) {
@@ -23,14 +27,28 @@ int main(int argc, char** argv) {
     bool shouldClose = false;
     SDL_Event event;
 
-    vkl::Init();
+    unsigned int count;
+    SDL_Vulkan_GetInstanceExtensions(window, &count, nullptr);
+    std::vector<const char*> extensions(count);
+    SDL_Vulkan_GetInstanceExtensions(window, &count, extensions.data());
 
-    while(!shouldClose) {
-        while(SDL_PollEvent(&event)) {
-            if(event.type == SDL_QUIT) {
-                shouldClose = true;
-            }
+    vkl::Init(
+        extensions,
+        [&](vk::Instance instance) {
+          VkSurfaceKHR surface;
+          if (!SDL_Vulkan_CreateSurface(window, instance, &surface)) {
+            throw std::runtime_error("can't create surface");
+          }
+          return surface;
+        },
+        1024, 720);
+
+    while (!shouldClose) {
+      while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+          shouldClose = true;
         }
+      }
     }
 
     vkl::Quit();
