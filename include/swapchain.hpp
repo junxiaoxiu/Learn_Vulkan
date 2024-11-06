@@ -22,9 +22,14 @@ public:
         vk::SurfaceTransformFlagBitsKHR transform;
         vk::PresentModeKHR present;
     };
+
     SwapchainInfo info;
+    std::vector<vk::Image> images;
+    std::vector<vk::ImageView> imagesViews;
 
     void queryInfo(int w, int h);
+    void getImages();
+    void createImageViews();
 };
 
 // namespace vkl
