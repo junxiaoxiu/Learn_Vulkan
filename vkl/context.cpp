@@ -1,14 +1,10 @@
 #include "context.hpp"
 #include "SDL2/SDL_gamecontroller.h"
+#include "render_process.hpp"
 #include "swapchain.hpp"
 #include "vulkan/vulkan.hpp"
 #include <cassert>
-#include <cstddef>
-#include <cstring>
 #include "tool.hpp"
-#include "vulkan/vulkan_core.h"
-#include "vulkan/vulkan_handles.hpp"
-#include "vulkan/vulkan_structs.hpp"
 
 #include <iostream>
 
@@ -31,6 +27,7 @@ Context::Context(const std::vector<const char*>& extensions, CreateSurfaceFunc f
     queryQueueFamilyIndices();
     createDevice();
     getQueues();
+    renderProcess.reset(new RenderProcess);
 }
 
 Context::~Context() {

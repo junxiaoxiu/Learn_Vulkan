@@ -10,6 +10,7 @@
 #include <memory>
 #include <cassert>
 #include <optional>
+#include "render_process.hpp"
 
 namespace vkl {
 
@@ -40,6 +41,7 @@ public:
     vk::Queue presentQueue;
     vk::SurfaceKHR surface;
     std::unique_ptr<Swapchain> swapchain;
+    std::unique_ptr<RenderProcess> renderProcess;
     QueueFamilyIndices queueFamilyIndices;
 
     void InitSwapChain(int w, int h) {

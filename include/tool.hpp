@@ -26,4 +26,6 @@ void RemoveNoSupportedElems(std::vector<T>& elems, const std::vector<U>& support
 
 }
 
+std::string ReadWholeFile(const std::string& filename);
+
 }

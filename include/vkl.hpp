@@ -2,6 +2,7 @@
  
 #include <vulkan/vulkan.hpp>
 #include "tool.hpp"
+#include "shader.hpp"
 
 namespace vkl {
 
