@@ -1,8 +1,12 @@
 #include "render_process.hpp"
 #include "shader.hpp"
 #include "context.hpp"
+#include "vulkan/vulkan.hpp"
+#include "vulkan/vulkan_core.h"
+#include "vulkan/vulkan_enums.hpp"
 #include "vulkan/vulkan_structs.hpp"
 #include <stdexcept>
+#include "swapchain.hpp"
 
 namespace vkl {
 
@@ -61,6 +65,10 @@ void RenderProcess::InitPipeline(int width, int height) {
              .setAttachments(attachs);
     createInfo.setPColorBlendState(&blendInfo);
 
+    // renderpass and layout
+    createInfo.setRenderPass(renderpass)
+              .setLayout(layout);
+
     auto result = Context::GetInstance().device.createGraphicsPipeline(nullptr, createInfo);
     if(result.result != vk::Result::eSuccess) {
         throw std::runtime_error("create graphics pipeline failed");
@@ -68,8 +76,48 @@ void RenderProcess::InitPipeline(int width, int height) {
     pipeline = result.value;
 }
 
-void RenderProcess::DestroyPipeline() {
-    Context::GetInstance().device.destroyPipeline(pipeline);
+void RenderProcess::InitLayout() {
+    vk::PipelineLayoutCreateInfo createInfo;
+    layout = Context::GetInstance().device.createPipelineLayout(createInfo);
+}
+
+void RenderProcess::InitRenderPass() {
+    vk::RenderPassCreateInfo createInfo;
+    vk::AttachmentDescription attachDesc;
+    attachDesc.setFormat(Context::GetInstance().swapchain->info.format.format)
+              .setInitialLayout(vk::ImageLayout::eUndefined)
+              .setFinalLayout(vk::ImageLayout::eColorAttachmentOptimal)
+              .setLoadOp(vk::AttachmentLoadOp::eDontCare)
+              .setStoreOp(vk::AttachmentStoreOp::eStore)
+              .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
+              .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
+              .setSamples(vk::SampleCountFlagBits::e1);
+    createInfo.setAttachments(attachDesc);
+
+    vk::AttachmentReference reference;
+    reference.setLayout(vk::ImageLayout::eColorAttachmentOptimal)
+             .setAttachment(0);
+    vk::SubpassDescription subpass;
+    subpass.setPipelineBindPoint(vk::PipelineBindPoint::eGraphics)
+           .setColorAttachments(reference);
+    createInfo.setSubpasses(subpass);
+      
+    vk::SubpassDependency dependency;
+    dependency.setSrcSubpass(VK_SUBPASS_EXTERNAL)
+              .setDstSubpass(0)
+              .setDstAccessMask(vk::AccessFlagBits::eColorAttachmentWrite)
+              .setSrcStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput)
+              .setDstStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput);
+    createInfo.setDependencies(dependency);
+
+    renderpass = Context::GetInstance().device.createRenderPass(createInfo);
+}
+
+RenderProcess::~RenderProcess() {
+    auto& device = Context::GetInstance().device;
+    device.destroyRenderPass(renderpass);
+    device.destroyPipelineLayout(layout);
+    device.destroyPipeline(pipeline);
 }
 
 } // namespace vkl
