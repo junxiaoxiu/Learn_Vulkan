@@ -11,6 +11,7 @@ void Init(const std::vector<const char*>& extensions, CreateSurfaceFunc func, in
     Shader::Init(ReadWholeFile("./vert.spv"), ReadWholeFile("./frag.spv"));
     Context::GetInstance().renderProcess->InitRenderPass();
     Context::GetInstance().renderProcess->InitLayout();
+    Context::GetInstance().swapchain->createFramebuffers(w, h);
     Context::GetInstance().renderProcess->InitPipeline(w, h);
 }
 

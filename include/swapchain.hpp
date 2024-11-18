@@ -1,10 +1,6 @@
 #pragma once
 
-#include "SDL2/SDL_stdinc.h"
 #include "vulkan/vulkan.hpp"
-#include "vulkan/vulkan_enums.hpp"
-#include "vulkan/vulkan_handles.hpp"
-#include "vulkan/vulkan_structs.hpp"
 
 namespace vkl {
 
@@ -26,10 +22,12 @@ public:
     SwapchainInfo info;
     std::vector<vk::Image> images;
     std::vector<vk::ImageView> imagesViews;
+    std::vector<vk::Framebuffer> framebuffers;
 
     void queryInfo(int w, int h);
     void getImages();
     void createImageViews();
+    void createFramebuffers(int w, int h);
 };
 
 // namespace vkl

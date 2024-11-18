@@ -1,8 +1,6 @@
 #include "swapchain.hpp"
 #include "context.hpp"
-#include "vulkan/vulkan_enums.hpp"
 #include "vulkan/vulkan_structs.hpp"
-#include <system_error>
 
 namespace vkl{
 
@@ -36,6 +34,10 @@ Swapchain::Swapchain(int w, int h) {
 }
 
 Swapchain::~Swapchain() {
+    for(auto& framebuffer : framebuffers) {
+        Context::GetInstance().device.destroyFramebuffer(framebuffer);
+    }
+
     for(auto& view : imagesViews) {
         Context::GetInstance().device.destroyImageView(view);
     }
@@ -97,6 +99,20 @@ void Swapchain::createImageViews() {
         imagesViews[i] = Context::GetInstance().device.createImageView(createInfo);
     }
 
+}
+
+void Swapchain::createFramebuffers(int width, int height) {
+    framebuffers.resize(images.size());
+    for (int i = 0; i < framebuffers.size(); i++) {
+      vk::FramebufferCreateInfo createInfo;
+      createInfo.setAttachments(imagesViews[i])
+                .setWidth(width)
+                .setHeight(height)
+                .setRenderPass(Context::GetInstance().renderProcess->renderpass)
+                .setLayers(1);
+
+        framebuffers[i] = Context::GetInstance().device.createFramebuffer(createInfo);
+    }
 }
 
 }
