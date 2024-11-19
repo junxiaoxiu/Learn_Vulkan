@@ -22,8 +22,7 @@ Swapchain::Swapchain(int w, int h) {
 
     auto& queueIndicecs = Context::GetInstance().queueFamilyIndices;
     if (queueIndicecs.graphicsQueue.value() == queueIndicecs.presentQueue.value()) {
-        createInfo
-                  .setImageSharingMode(vk::SharingMode::eExclusive);
+        createInfo.setImageSharingMode(vk::SharingMode::eExclusive);
     } else {
         std::array indices = {queueIndicecs.graphicsQueue.value(), queueIndicecs.presentQueue.value()};
         createInfo.setQueueFamilyIndices(indices)
@@ -31,6 +30,9 @@ Swapchain::Swapchain(int w, int h) {
     }
 
     swapchain = Context::GetInstance().device.createSwapchainKHR(createInfo);
+
+    getImages();
+    createImageViews();
 }
 
 Swapchain::~Swapchain() {

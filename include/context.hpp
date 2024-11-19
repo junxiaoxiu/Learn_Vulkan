@@ -1,11 +1,13 @@
 #pragma once
 
 #include "SDL2/SDL_stdinc.h"
+#include "renderer.hpp"
 #include "swapchain.hpp"
 #include "tool.hpp"
 #include "vkl.hpp"
 #include "vulkan/vulkan.hpp"
 #include "vulkan/vulkan_handles.hpp"
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <cassert>
@@ -42,6 +44,7 @@ public:
     vk::SurfaceKHR surface;
     std::unique_ptr<Swapchain> swapchain;
     std::unique_ptr<RenderProcess> renderProcess;
+    std::unique_ptr<Renderer> renderer;
     QueueFamilyIndices queueFamilyIndices;
 
     void InitSwapChain(int w, int h) {
@@ -51,6 +54,15 @@ public:
     void DestroySwapchain(){
         swapchain.reset();
     }
+
+    void InitRenderer() {
+        renderer.reset(new Renderer);
+    }
+
+    void DestroyRenderer() {
+        renderer.reset();
+    }
+
 private:
     Context(const std::vector<const char*>& extensions, CreateSurfaceFunc func);
 

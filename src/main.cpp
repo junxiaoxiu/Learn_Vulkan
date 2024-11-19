@@ -43,12 +43,14 @@ int main(int argc, char** argv) {
         },
         1024, 720);
 
+    auto& renderer = vkl::GetRenderer();
     while (!shouldClose) {
-      while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) {
-          shouldClose = true;
+        while (SDL_PollEvent(&event)) {
+          if (event.type == SDL_QUIT) {
+            shouldClose = true;
+          }
         }
-      }
+        renderer.Render();
     }
 
     vkl::Quit();
